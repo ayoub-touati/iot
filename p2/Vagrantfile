@@ -1,0 +1,34 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = "debian/bookworm64"
+
+  config.vm.define "aababachS" do |control|
+    control.vm.hostname = "aababachS"
+    control.vm.network "private_network", ip: "192.168.56.110"
+    control.vm.provider "virtualbox" do |v|
+      v.name = "aababachS"
+      v.memory = 1024
+      v.cpus = 1
+    end
+    control.vm.synced_folder "./scripts", "/vagrant/scripts"
+    control.vm.provision "shell", inline: <<-SHELL
+      # Add hostnames to /etc/hosts
+      sudo /vagrant/scripts/k3s.sh
+
+      # Apply Kubernetes manifests
+      kubectl apply -f /vagrant/scripts/deployments.yaml
+      kubectl apply -f /vagrant/scripts/service.yaml
+      kubectl apply -f /vagrant/scripts/ingress.yaml
+
+      # Wait for Traefik to get an external IP
+      sudo /vagrant/scripts/traefik.sh
+
+      echo "alias k='sudo kubectl'" >> .bashrc
+      source .bashrc
+    SHELL
+  end
+end
+
+# Check if Ingress exists → kubectl get ingress -A
+# Check if Traefik is running → kubectl get pods -A | grep traefik
+# Verify services exist → kubectl get services -A
+# Describe the Ingress → kubectl describe ingress app-ingress
