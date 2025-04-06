@@ -1,0 +1,33 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = "debian/bookworm64"
+  config.vm.synced_folder "./scripts", "/vagrant/scripts"
+
+  # Control Plane Node
+  config.vm.define "aababachS" do |control|
+    control.vm.hostname = "aababachS"
+    control.vm.network "private_network", ip: "192.168.56.110"
+    control.vm.provider "virtualbox" do |v|
+      v.name = "aababachS"
+      v.memory = 2024
+      v.cpus = 2
+    end
+
+    control.vm.provision "shell", inline: <<-SHELL
+      /vagrant/scripts/server.sh
+    SHELL
+  end
+
+  config.vm.define "aababachSW" do |worker|
+    worker.vm.hostname = "aababachSW"
+    worker.vm.network "private_network", ip: "192.168.56.111"
+    worker.vm.provider "virtualbox" do |v|
+      v.name = "aababachSW"
+      v.memory = 2024
+      v.cpus = 2
+    end
+
+    worker.vm.provision "shell", inline: <<-SHELL
+      /vagrant/scripts/worker.sh
+    SHELL
+  end
+end
