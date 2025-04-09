@@ -15,10 +15,6 @@ ports:
   - port: 8888:30007
     nodeFilters:
       - server:0
-# #NOTE: not sure if i need this one?
-  - port: 80:80
-    nodeFilters:
-      - loadbalancer
   #NOTE: ssh (cloning and pushing into our local gitlab)
   - port: 22:22
     nodeFilters:
