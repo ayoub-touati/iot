@@ -2,55 +2,61 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-
-{ config, lib, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
-  # services.k3s.enable = true;
   imports =
     [ # Include the results of the hardware scan.
-      ./modules/all.nix
+      ./hardware-configuration.nix
+     ./modules/all.nix
     ];
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  #AUTO-UPDATE
-  system.autoUpgrade.enable = true;
+  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
+ nixpkgs.config.allowUnfree = true; 
+
+  #nix.settings.experimental-features = [ "nix-command" "flakes" ];
+#GIT
+  programs.git.enable = true;
 
   # Bootloader.
-  # boot.loader.systemd-boot.enable = true;
-  # boot.loader.efi.canTouchEfiVariables = true;
-  # TODO:
-  boot.loader = {
-    timeout = 5;
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
 
-    efi = {
-      efiSysMountPoint = "/boot";
-    };
+  networking.hostName = "atouatiS"; # Define your hostname.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-    grub = {
-      enable = true;
-      
-      efiSupport = true;
-      efiInstallAsRemovable = true; # Otherwise /boot/EFI/BOOT/BOOTX64.EFI isn't generated
-      devices = [ "nodev" ];
-      extraEntriesBeforeNixOS = false;
-      extraEntries = ''
-        menuentry "Reboot" {
-          reboot
-        }
-        menuentry "Poweroff" {
-          halt
-        }
-      '';
-    };
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Enable networking
+  networking.networkmanager.enable = true;
+
+  # Set your time zone.
+  time.timeZone = "Africa/Casablanca";
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "ar_MA.UTF-8";
+    LC_IDENTIFICATION = "ar_MA.UTF-8";
+    LC_MEASUREMENT = "ar_MA.UTF-8";
+    LC_MONETARY = "ar_MA.UTF-8";
+    LC_NAME = "ar_MA.UTF-8";
+    LC_NUMERIC = "ar_MA.UTF-8";
+    LC_PAPER = "ar_MA.UTF-8";
+    LC_TELEPHONE = "ar_MA.UTF-8";
+    LC_TIME = "ar_MA.UTF-8";
   };
-    #FIX:-----------
 
   # Enable the X11 windowing system.
+  # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
-  services.xserver.desktopManager.plasma5.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -62,7 +68,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
+  hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -70,142 +76,30 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    jack.enable = true;
+    #jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
-  
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.defaultUserShell = pkgs.zsh;
-  users.users.dumbledoor = {
-    useDefaultShell = true;
+  users.users.atouatis = {
     isNormalUser = true;
-    description = "Dumbledoor";
+    description = "atouatiS";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      kate
+      kdePackages.kate
     #  thunderbird
     ];
   };
-  programs.git = {
-	enable = true;
-	};
 
-  # programs.appimage.enable = true;
+  # Install firefox.
+  programs.firefox.enable = true;
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  # environment.homeBinInPath = true;
-  programs.kdeconnect.enable = true;
-  #Note: Another reason to use GNOME
-  # Uncomment the next 2 lines if you're not using GNOME
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-  xdg.portal.config.common.default = "gtk";
-
-  # enable flatpack currently only using zen_browser package
-  services.flatpak.enable = true;
-
-  # NOTE: should i add this ?
-  nix.settings.auto-optimise-store = true;
-
-  environment.systemPackages = with pkgs; [
-
-
-    # boot entries listing
-    efibootmgr
-    # disk utilities
-    gparted
-    # bootable usb solution
-    ventoy-full
-	# debugging and profiling
-	valgrind
-	# terminal filemanager
-	yazi-unwrapped
-	# cmd tools
-	lsof
-	porsmo
-	libnotify
-	fd # simple fast alternative to find
-	eza # ls with steroids
-	macchina
-	tldr # Simplified community driven man pages
-	bat # cat on steroid
-	fzf # your local fuzzyfinder
-	unzip
-	zip
-  	wget
-	#Linters
-	# Languages
-	zig
-	python3
-	lua
-	luajitPackages.luarocks_bootstrap #luarocks in3lbo lismak sa3tayn wana kan9lb 3liha b9
-    pnpm
-	nodejs_23
-	# SDKs for mobile dev
-	flutter327
-	android-studio
-	# 
-	# recording
-	obs-studio
-	# browser
-	brave
-	google-chrome
-	# security
-	vulnix
-	# Network
-	# haskellPackages.hellnet
-	# essential GUI apps
-	telegram-desktop
-	spotify
-	discord
-	foliate
-	obsidian
-	# terminals
-	# blackbox
-	alacritty
-	ghostty
-	# #FIX: Fonts
-	plemoljp-nf # nerdfonts for neovim icons
-	# nerd-fonts
-	# Common
-	zoxide
-	# editors
-	# zed-editor
-	neovim
-	# GUI for neovim
-	neovide
-	# needed by telescope
-	ripgrep
-	xclip
-	tree-sitter
-  	vim # not sure lol
-	# Compilers and build tools
-	clang
-	gcc
-    ninja
-	#FIX: did not work
-	# pkgconf
-	cmake
-	gnumake
-    # NOTE: DISK USAGE STATISTICS
-    libsForQt5.filelight
-    #NOTE: VMs images management/deployment/creation
-    vagrant
-    packer
-    # token generation
-    openssl
-  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -219,16 +113,12 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
-#   services.create_ap = {
-#   enable = true;
-#   settings = {
-#     INTERNET_IFACE = "eth0";
-#     WIFI_IFACE = "wlan0";
-#     SSID = "My Wifi Hotspot";
-#     PASSPHRASE = "12345678";
-#   };
-# };
 
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
