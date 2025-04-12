@@ -1,4 +1,4 @@
-DIR="/home/dumbledoor/Desktop/iot/bonus"
+DIR=$PWD
 
 # #NOTE: deploying argocd
 

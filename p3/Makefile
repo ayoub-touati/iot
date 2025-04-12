@@ -1,4 +1,4 @@
-DIR=/home/dumbledoor/Desktop/iot/p3
+DIR=$(PWD)
 
 .PHONY: all clean
 

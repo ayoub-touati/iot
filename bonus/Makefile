@@ -1,5 +1,4 @@
-DIR=/home/dumbledoor/Desktop/iot/bonus
-
+DIR=$(PWD)
 .PHONY: all clean
 
 # Default target (runs when you just type 'make')
