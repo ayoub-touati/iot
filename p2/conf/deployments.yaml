@@ -17,7 +17,8 @@ spec:
           image: nginx
           ports:
             - containerPort: 80
-
+          command: ["/bin/sh", "-c"]
+          args: ["echo 'Hello from App1!' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,6 +39,8 @@ spec:
           image: nginx
           ports:
             - containerPort: 80
+          command: ["/bin/sh", "-c"]
+          args: ["echo 'Hello from App2!' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
 
 ---
 apiVersion: apps/v1
@@ -59,3 +62,5 @@ spec:
           image: nginx
           ports:
             - containerPort: 80
+          command: ["/bin/sh", "-c"]
+          args: ["echo 'Hello from App3!' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
