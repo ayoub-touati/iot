@@ -9,15 +9,15 @@ Vagrant.configure(2) do |config|
       v.cpus = 1
     end
     control.vm.synced_folder "./scripts", "/vagrant/scripts"
-    control.vm.synced_folder "./conf", "/vagrant/conf"
+    control.vm.synced_folder "./confs", "/vagrant/conf"
     control.vm.provision "shell", inline: <<-SHELL
       # Install k3s
       sudo /vagrant/scripts/k3s.sh
 
       # Apply Kubernetes manifests
-      kubectl apply -f /vagrant/conf/deployments.yaml
-      kubectl apply -f /vagrant/conf/service.yaml
-      kubectl apply -f /vagrant/conf/ingress.yaml
+      kubectl apply -f /vagrant/confs/deployments.yaml
+      kubectl apply -f /vagrant/confs/service.yaml
+      kubectl apply -f /vagrant/confs/ingress.yaml
 
       # Wait for Traefik to get an external IP
       sudo /vagrant/scripts/traefik.sh
