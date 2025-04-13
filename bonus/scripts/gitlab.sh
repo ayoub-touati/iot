@@ -1,9 +1,12 @@
+sudo helm repo remove gitlab 2>/dev/null || true
+sudo helm uninstall gitlab -n gitlab 2>/dev/null || true
+sudo kubectl delete pvc --all -n gitlab 2>/dev/null || true
 sudo kubectl create namespace gitlab
 sudo helm repo add gitlab https://charts.gitlab.io/
 sudo helm repo update
 sudo helm upgrade --install gitlab gitlab/gitlab \
   --namespace gitlab \
-  --timeout 1000s \
+  --timeout 600s \
   --set global.hosts.domain=example.com \
   --set global.hosts.externalIP=172.18.0.2 \
   --set certmanager-issuer.email=me@example.com \
