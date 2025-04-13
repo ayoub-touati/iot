@@ -1,3 +1,6 @@
+sudo helm repo remove gitlab 2>/dev/null || true
+sudo helm uninstall gitlab -n gitlab 2>/dev/null || true
+sudo kubectl delete pvc --all -n gitlab 2>/dev/null || true
 sudo kubectl create namespace gitlab
 sudo helm repo add gitlab https://charts.gitlab.io/
 sudo helm repo update
