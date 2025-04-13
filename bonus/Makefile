@@ -7,7 +7,7 @@ all: cluster argocd gitlab
 # Run cluster.sh
 cluster:
 	@echo "Running cluster.sh..."
-	sudo k3d cluster create --config ${DIR}/conf/k3d-cluster.yml
+	sudo k3d cluster create --config ${DIR}/confs/k3d-cluster.yml
 
 argocd:
 	@echo "Running argocd.sh..."
